@@ -1,9 +1,26 @@
-require_relative 'lib/request'
+## Please ignore this file for now, it is used mostly for testing purposes
 
-# requests = Dir.glob("example_requests/*")
-Dir.each_child('example_requests') do |filename|
-    test_request = File.read("example_requests/#{filename}")
-    request = Request.new(test_request)
-    request.display_request
-    puts ""
+class Router
+    def initialize
+        @gets = @posts = {}
+    end
+
+    def get(route, &block)
+        if block_given?
+            
+        else
+            return nil
+        end
+    end
+
+    def post(route)
+        if block_given?
+            yield
+        else
+            return nil
+        end
+    end
+    'add/:num1/:num2'
+    /add\/(\w+)\/(\w+)/
+
 end
