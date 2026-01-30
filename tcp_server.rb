@@ -1,12 +1,15 @@
 require 'socket'
 require_relative 'lib/request.rb'
+require_relative 'lib/response.rb'
 
-require_relative 'thing.rb' #dummy file for testing
+# require_relative 'thing.rb' #dummy file for testing
+require "debug"
 
 class HTTPServer
 
   def initialize(port)
     @port = port
+    @constructor = ResponseBuilder.new('HTTP/1.1')
   end
 
   def start
@@ -25,12 +28,17 @@ class HTTPServer
 
       request = Request.build(data, session)
 
-      html = "<h1>Hello, World!</h1>"
+      content = "<h1>Hello, World!</h1>"
+      headers = {"Content-Type": "text/html"}
 
-      session.print "HTTP/1.1 200\r\n"
-      session.print "Content-Type: text/html\r\n"
-      session.print "\r\n"
-      session.print html
+      response = @constructor.build(headers: headers, content: content)
+
+      # session.print "HTTP/1.1 200\r\n"
+      # session.print "Content-Type: text/html\r\n"
+      # session.print "\r\n"
+      # session.print content
+
+      session.print response
       session.close
     end
   end
