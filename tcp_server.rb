@@ -10,6 +10,8 @@ class HTTPServer
   def initialize(port)
     @port = port
     @constructor = ResponseBuilder.new('HTTP/1.1')
+    @routes = [
+      "/","/abdec","/helloworld"]
   end
 
   def start
@@ -28,10 +30,14 @@ class HTTPServer
 
       request = Request.build(data, session)
 
-      content = "<h1>Hello, World!</h1>"
+      content = "<h1>Hello, World!</h1>" if !request.is_a?(HeadRequest)
       headers = {"Content-Type": "text/html"}
 
-      response = @constructor.build(headers: headers, content: content)
+      if @routes.include? request.resource
+        response = @constructor.build(headers: headers, content: content)
+      else
+        response = @constructor.error(404)
+      end
 
       # session.print "HTTP/1.1 200\r\n"
       # session.print "Content-Type: text/html\r\n"

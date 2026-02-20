@@ -1,10 +1,12 @@
 class Request
 
     def self.build(data, session = nil)
-        if data.start_with?("GET")
+        if data.start_with? "GET"
             return GetRequest.new(data)
-        elsif data.start_with?("POST")
+        elsif data.start_with? "POST"
             return PostRequest.new(data, session)
+        elsif data.start_with? "HEAD"
+            return HeadRequest.new(data)
         else
             raise MethodError
         end
@@ -18,7 +20,7 @@ class Request
     #     if @params!={} then puts @params.to_s end
     # end
 
-    def parse_request (request)
+    def parse_request(request)
         lines = request.split(/\r?\n/)
         
         dummy, @resource, @version = lines[0].split(" ")
@@ -70,9 +72,11 @@ class PostRequest < Request
         self.parse_request(request.chomp)
 
         if length = @headers["Content-Length"]
-            @params += session.gets(length)
+            @params = session.gets(length)
         else @params = nil end
         self.parse_params
     end
 end
     
+class HeadRequest < GetRequest
+end
