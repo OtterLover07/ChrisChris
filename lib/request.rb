@@ -1,4 +1,5 @@
 class Request
+    attr_reader :raw,:resource,:version,:headers,:params,:method
 
     def self.build(data, session = nil)
         if data.start_with? "GET"
@@ -50,9 +51,10 @@ class Request
 end
 
 class GetRequest < Request
-    attr_reader :raw,:resource,:version,:headers,:params
+    # attr_reader :raw,:resource,:version,:headers,:params,:method
     
     def initialize(request)
+        @method = :get
         @raw = request
         self.parse_request(request.chomp)
         if @resource.include?("?")
@@ -65,9 +67,10 @@ class GetRequest < Request
 end
 
 class PostRequest < Request
-    attr_reader :raw,:resource,:version,:headers,:params
+    # attr_reader :raw,:resource,:version,:headers,:params,:method
 
     def initialize(request, session)
+        @method = :post
         @raw = request
         self.parse_request(request.chomp)
 

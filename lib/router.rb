@@ -23,9 +23,9 @@ class Router
     # 'add/:num1/:num2'
     # /add\/(\w+)\/(\w+)/
 
-    def match_route(path)
+    def match_route(path, method)
         @routes.each do |route|
-            if route[:path] == path ######## FIXA SEN ###########
+            if route[:path] == path && route[:method] == method ######## FIXA SEN FÖR DYNAMISKA ROUTES###########
                 return route
             end
         end

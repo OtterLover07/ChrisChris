@@ -20,7 +20,7 @@ class Response
         @headers = headers
         if content && content != ""
             @content = content.to_s
-            @headers["content_length"] = @content.bytesize
+            @headers["Content-Length"] = @content.bytesize.to_s
         elsif !status
             status = 204
         end
@@ -37,8 +37,10 @@ class Response
     def to_s
         output = "#{@version.to_s} #{@status}\r\n"
         @headers.each { |header, value| output += "#{header}: #{value}\r\n" } if headers
+        terminaloutput = output
         output += "\r\n#{@content}\r\n" if content
-        puts output
+        terminaloutput output += "\r\n#{@content}\r\n" if content && content.bytesize < 10000
+        puts terminaloutput
         return output
     end
 
