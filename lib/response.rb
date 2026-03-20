@@ -39,7 +39,7 @@ class Response
         @headers.each { |header, value| output += "#{header}: #{value}\r\n" } if headers
         terminaloutput = output
         output += "\r\n#{@content}\r\n" if content
-        terminaloutput output += "\r\n#{@content}\r\n" if content && content.bytesize < 10000
+        terminaloutput += "\r\n#{@content}\r\n" if content && content.bytesize < 10000
         puts terminaloutput
         return output
     end

@@ -1,8 +1,8 @@
 require 'socket'
 require 'zlib'
-require_relative 'lib/request.rb'
-require_relative 'lib/response.rb'
-require_relative 'lib/router.rb'
+require_relative 'request.rb'
+require_relative 'response.rb'
+require_relative 'router.rb'
 
 # require_relative 'thing.rb' #dummy file for testing
 require "debug"
@@ -32,9 +32,11 @@ class HTTPServer
 
       request = Request.build(data, session)
 
-      route = @router.match_route request.resource, request.method
+      route, params = @router.match_route request.resource, request.method
+      params.merge! request.params
+      # binding.break
       if route
-        content = route[:block].call
+        content = route[:block].call(params) 
         headers = {
           "Content-Type": "text/html"
         }
@@ -49,7 +51,6 @@ class HTTPServer
         error = @constructor.error(404)
       end
 
-      # binding.break
 
       content = nil if request.is_a?(HeadRequest)
       response = @constructor.build(headers: headers, content: content)
