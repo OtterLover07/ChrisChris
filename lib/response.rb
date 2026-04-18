@@ -26,8 +26,7 @@ class Response
         end
 
         if status
-            @status = status
-            self.interpret_status
+            @status = self.status_case status
         else
             @status = "200 OK"
         end
@@ -46,12 +45,8 @@ class Response
 
     private
 
-    def interpret_status
-        @status = self.status_case
-    end
-
-    def status_case
-        case @status.to_int
+    def status_case status
+        case status.to_int
 
         # Informational Responses
         when 100
@@ -188,7 +183,6 @@ class Response
             "510 Not Extended"
         when 511
             "511 Network Authentication Required"
-
         else
             raise "Response not supported"
         end

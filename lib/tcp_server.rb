@@ -1,11 +1,9 @@
 require 'socket'
-require 'zlib'
-require_relative 'request.rb'
-require_relative 'response.rb'
-require_relative 'router.rb'
-
-# require_relative 'thing.rb' #dummy file for testing
-require "debug"
+require 'debug'
+# require all .rb files in /lib
+Dir.glob("./lib/*.rb").each {|file| require file }
+# path = __dir__ + "/lib/*.rb"
+# Dir[path].each {|file| require file }
 
 class HTTPServer
   attr_reader :constructor, :router
@@ -25,6 +23,7 @@ class HTTPServer
       while line = session.gets and line !~ /^\s*$/
         data += line
       end
+
       puts "RECEIVED REQUEST"
       puts '-' * 40
       puts data
@@ -33,9 +32,10 @@ class HTTPServer
       request = Request.build(data, session)
 
       route, params = @router.match_route request.resource, request.method
-      params.merge! request.params
+
       # binding.break
       if route
+        params.merge! request.params
         content = route[:block].call(params) 
         headers = {
           "Content-Type": "text/html"
@@ -51,12 +51,13 @@ class HTTPServer
         error = @constructor.error(404)
       end
 
-
-      content = nil if request.is_a?(HeadRequest)
-      response = @constructor.build(headers: headers, content: content)
-
-      if error
+      if content.is_a?(Redirect)
+        response = @constructor.redirect(content.location)
+      elsif error
         response = error
+      else
+        content = nil if request.is_a?(HeadRequest)
+        response = @constructor.build(headers: headers, content: content)
       end
 
       session.print response
@@ -112,26 +113,4 @@ end
 
 @r = Router.new
 
-def server
-  if @server
-    @server
-  else
-    @server = HTTPServer.new(4567, @r)
-  end
-end
-
-# server = HTTPServer.new(4567, @r)
-
-def get(path, &block)
-  @r.get(path, &block)
-end
-
-def post(path, &block)
-  @r.post(path, &block)
-end
-
-
-# require_relative "app.rb"
-
-
-# server.start
+# require_relative "lib/utils.rb"
