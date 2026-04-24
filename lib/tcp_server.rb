@@ -12,6 +12,7 @@ class HTTPServer
     @port = port
     @constructor = ResponseBuilder.new('HTTP/1.1')
     @router = router
+    @big_session = {}
   end
 
   def start
@@ -35,10 +36,14 @@ class HTTPServer
 
       # binding.break
       if route
-        params.merge! request.params
-        content = route[:block].call(params) 
+        merged = params.merge request.params
+        context = RequestContext.new(request, merged, @big_session)
+        content = context.instance_exec(&route[:block])
+
+        # content = route[:block].call(params) ## gammal implementation
         headers = {
-          "Content-Type": "text/html"
+          "Content-Type": "text/html",
+          "Set-Cookie": "SessionIdentifier=#{context.session_id}; dummy=true"
         }
       elsif File.exist?("./public#{request.resource}") && !File.directory?("./public#{request.resource}")
         start = Time.now
@@ -110,7 +115,3 @@ class HTTPServer
   end
 
 end
-
-@r = Router.new
-
-# require_relative "lib/utils.rb"

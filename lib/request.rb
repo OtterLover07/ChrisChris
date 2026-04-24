@@ -1,5 +1,5 @@
 class Request
-    attr_reader :raw,:resource,:version,:headers,:params,:method
+    attr_reader :raw,:resource,:version,:headers,:params,:method,:cookies
 
     def self.build(data, session = nil)
         if data.start_with? "GET"
@@ -36,6 +36,9 @@ class Request
         split_lines = []
         header_lines.each {|line| split_lines << line.split(": ")}
         @headers = split_lines.to_h
+        if string = @headers["Cookie"]
+            @cookies = Hash[string.split('; ').map { |pair| pair.split('=') }]
+        end
     end
 
     def parse_params

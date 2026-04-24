@@ -1,11 +1,9 @@
 class Router
     def initialize
-        # @gets = [{:path => /^\/wat\/(<?wotid>\w+)\/wot/(\w+)$/, :block => block},{}] 
         @routes = [] 
     end
 
     def get(path, &block)
-        # /wat/:watid/wot/:wotid
         if block_given?
             add_route(:get, path, block)
         else
@@ -20,8 +18,6 @@ class Router
             raise ArgumentError "No block given"
         end
     end
-    # 'add/:num1/:num2'
-    # /add\/(\w+)\/(\w+)/
 
     def match_route(path, method)
         @routes.each do |route|
@@ -64,3 +60,5 @@ class Router
         Regexp.new(new_path)
     end
 end
+
+@r = Router.new
