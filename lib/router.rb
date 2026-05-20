@@ -11,7 +11,7 @@ class Router
         end
     end
 
-    def post(route, &block)
+    def post(path, &block)
         if block_given?
             add_route(:post, path, block)
         else

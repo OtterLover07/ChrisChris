@@ -13,6 +13,10 @@ class Request
         end
     end
 
+    def path_info
+        self.resource
+    end
+
     private
 
     # def display_request
@@ -49,6 +53,8 @@ class Request
         step_1 = @params.split('&')
         step_2 = []
         step_1.each { |param| step_2 << param.split('=') }
+        # binding.break
+        step_2.each { |param| param << nil if param.length < 2}
         @params = step_2.to_h
     end
 end
@@ -77,8 +83,9 @@ class PostRequest < Request
         @raw = request
         self.parse_request(request.chomp)
 
-        if length = @headers["Content-Length"]
-            @params = session.gets(length)
+        if (length = @headers["Content-Length"]) != nil
+            content = session.read(length.to_i)
+            @params = content
         else @params = nil end
         self.parse_params
     end

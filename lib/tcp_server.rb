@@ -31,14 +31,21 @@ class HTTPServer
       puts '-' * 40
 
       request = Request.build(data, session)
+      
 
       route, params = @router.match_route request.resource, request.method
 
       # binding.break
       if route
-        merged = params.merge request.params
-        context = RequestContext.new(request, merged, @big_session)
-        content = context.instance_exec(&route[:block])
+        begin
+          merged = params.merge request.params
+          symbolized = {}
+          merged.each { |key,value| symbolized[key.to_sym]=value }
+          context = RequestContext.new(request, symbolized, @big_session)
+          content = context.instance_exec(&route[:block])
+        rescue RedirectError => rescuedata
+          content = Redirect.new(rescuedata)
+        end
 
         # content = route[:block].call(params) ## gammal implementation
         headers = {

@@ -9,17 +9,23 @@ class RequestContext
     end
 
     def redirect(location)
-        Redirect.new(location)
+        raise RedirectError, location
     end
     def session
         # if !@settings[:sessions]
         #     return nil
-        return nil if !request.cookies
+        return {} if !request.cookies
 
         if !(@session_id = request.cookies["SessionIdentifier"])
             @session_id = SecureRandom.uuid
             @big_session[@session_id] = {}
+        elsif !@big_session[@session_id]
+            @big_session[@session_id] = {}
         end
+        # binding.break
         return @big_session[@session_id]
     end
+end
+
+class RedirectError < StandardError
 end

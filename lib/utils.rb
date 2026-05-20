@@ -34,11 +34,11 @@ end
 def slim(path)
   path = path.to_s
   template = Slim::Template.new("views/#{path}.slim")
-  doc = template.render(@r, wat: "dafuq")
-  if File.exist?("views/layout.slim")
-    template2 = Slim::Template.new("views/#{path}.slim")
-    layout = template.render(@r, wat: "dafuq")
-    doc = layout.gsub("==yield", doc)
+  doc = template.render(self, wat: "dafuq")
+  if File.exist?("./views/layout.slim")
+    template2 = Slim::Template.new("views/layout.slim")
+    doc = template2.render(self, wat: "dafuq") {doc}
+    # doc = layout.gsub("==yield", doc)
   end
   doc
 end
