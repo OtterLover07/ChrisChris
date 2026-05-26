@@ -1,17 +1,27 @@
+# constructor class for building responses
 class ResponseBuilder
     def initialize(version)
         @version = version.to_sym
     end
 
+    # builds a response
+    # @param headers [Hash] the desired headers
+    # @param content [Object] the desired content, usually a string or plaintext
+    # @param status [String, Integer] the desired status
+    # @return [Response]
     def build(headers: {}, content:, status: nil)
         Response.new(@version, headers, content, status)
     end
-    
+
+    # builds a response containing only an error status
+    # @param status [String, Integer] the desired status
+    # @return [Response]
     def error(status)
         self.build(headers: nil, content: nil, status: status)
     end
 end
 
+# A class containing response data
 class Response
     attr_accessor :headers, :content
 
@@ -33,6 +43,8 @@ class Response
         return self.clone
     end
 
+    # converts response to a one-line string to be sent trough a terminal
+    # @return [string]
     def to_s
         output = "#{@version.to_s} #{@status}\r\n"
         @headers.each { |header, value| output += "#{header}: #{value}\r\n" } if headers

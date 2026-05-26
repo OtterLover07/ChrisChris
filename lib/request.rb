@@ -1,6 +1,14 @@
+# request.rb
+
+# A class for easily handling incoming requests
 class Request
     attr_reader :raw,:resource,:version,:headers,:params,:method,:cookies
 
+    # Creates a new Request instance based on input data.
+    # @param data [String] request data from the client.
+    # @param session [TCPSocket] the server-client connection, used to get more data during POST requests.
+    # @return [Object] the resulting request data condensed into a Request instance.
+    # @raise [MethodError] if the incoming request is not a GET, POST or HEAD request.
     def self.build(data, session = nil)
         if data.start_with? "GET"
             return GetRequest.new(data)
@@ -13,18 +21,16 @@ class Request
         end
     end
 
+    # (see #resource)
     def path_info
         self.resource
     end
 
     private
 
-    # def display_request
-    #     puts @method.to_s+" "+@resource+" "+@version
-    #     @headers.each {|key, value| puts key+": "+value }
-    #     if @params!={} then puts @params.to_s end
-    # end
-
+    # processes input data and distributes it among the proper attributes.
+    # @param request [String] raw request data from the client
+    # @private
     def parse_request(request)
         lines = request.split(/\r?\n/)
         
@@ -45,6 +51,7 @@ class Request
         end
     end
 
+    # parses param data from the request and updates the params attribute
     def parse_params
         if @params == nil
             @params = {}
@@ -59,8 +66,8 @@ class Request
     end
 end
 
+# A class containing the data of a GET request
 class GetRequest < Request
-    # attr_reader :raw,:resource,:version,:headers,:params,:method
     
     def initialize(request)
         @method = :get
@@ -75,8 +82,8 @@ class GetRequest < Request
     end
 end
 
+# A class containing the data of a POST request
 class PostRequest < Request
-    # attr_reader :raw,:resource,:version,:headers,:params,:method
 
     def initialize(request, session)
         @method = :post
@@ -91,5 +98,7 @@ class PostRequest < Request
     end
 end
     
+# A class containing the data of a HEAD request
+# @see #GetRequest
 class HeadRequest < GetRequest
 end

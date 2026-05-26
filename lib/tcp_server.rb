@@ -5,6 +5,7 @@ Dir.glob("./lib/*.rb").each {|file| require file }
 # path = __dir__ + "/lib/*.rb"
 # Dir[path].each {|file| require file }
 
+# a HTTP Server with the ability to take and respond to requests
 class HTTPServer
   attr_reader :constructor, :router
 
@@ -14,7 +15,8 @@ class HTTPServer
     @router = router
     @big_session = {}
   end
-
+  
+  # starts and perpetually runs the server
   def start
     server = TCPServer.new(@port)
     puts "Listening on #{@port}"
@@ -77,6 +79,9 @@ class HTTPServer
     end
   end
 
+  # determines a MIME media type from a file extension
+  # @param filename [String] name of the file
+  # @return [String] the determined media type
   def determine_filetype filename
     if filename.end_with?(".jpg")
       "image/jpeg"

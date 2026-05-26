@@ -1,5 +1,6 @@
 require 'securerandom'
 
+# A class in the context of wich route blocks are run, in order to access the session hash
 class RequestContext
     attr_reader :params,:request,:session_id
     def initialize(request, params, big_session=nil)
@@ -8,9 +9,15 @@ class RequestContext
         @big_session = big_session
     end
 
+    # stops the Proc, and the server to create a redirect response trough a rescue
+    # @param location [String] the location where to redirect
+    # @raise [RedirectError]
     def redirect(location)
         raise RedirectError, location
     end
+
+    # gets the session hash corresponding to the client's identification number
+    # @return [Hash]
     def session
         # if !@settings[:sessions]
         #     return nil
@@ -27,5 +34,6 @@ class RequestContext
     end
 end
 
+# An error to be rescued by the server. This is done in order to stop running the route block.
 class RedirectError < StandardError
 end

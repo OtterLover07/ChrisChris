@@ -1,9 +1,13 @@
+# @see ResponseBuilder
 class ResponseBuilder
+  # Builds a redirection response
+  # @param location [String] the route to redirect to
   def redirect(location)
     self.build(headers: {location: location}, content: nil, status: 303)
   end
 end
 
+# Redirect data
 class Redirect
   attr_reader :location
   def initialize(location)
@@ -11,10 +15,13 @@ class Redirect
   end
 end
 
+# @see #Redirect.new
 def redirect(location)
   Redirect.new(location)
 end
 
+# shorthand
+# @see HTTPServer.new
 def server
   if @server
     @server
@@ -23,14 +30,18 @@ def server
   end
 end
 
+# @see #Router.get
 def get(path, &block)
   @r.get(path, &block)
 end
 
+# @see #Router.post
 def post(path, &block)
   @r.post(path, &block)
 end
 
+# Renders a .slim file
+# @param path [String] path to the .slim file
 def slim(path)
   path = path.to_s
   template = Slim::Template.new("views/#{path}.slim")

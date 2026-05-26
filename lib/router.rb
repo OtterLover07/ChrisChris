@@ -1,8 +1,12 @@
+# A class handling and storing the routes for the server
 class Router
     def initialize
         @routes = [] 
     end
 
+    # stores a new GET route
+    # @param path [String] the address of the route
+    # @param block [Proc] the block corresponding to the route
     def get(path, &block)
         if block_given?
             add_route(:get, path, block)
@@ -11,6 +15,9 @@ class Router
         end
     end
 
+    # stores a new POST route
+    # @param path [String] the address of the route
+    # @param block [Proc] the block corresponding to the route
     def post(path, &block)
         if block_given?
             add_route(:post, path, block)
@@ -19,6 +26,10 @@ class Router
         end
     end
 
+    # Finds a stored route and returns the corresponding block
+    # @param path [String] the address of the route
+    # @param method [:get, :post] the method corresponding to the route (:get or :post)
+    # @return [Proc, nil] the block corresponding to the route, or nil if none was found
     def match_route(path, method)
         @routes.each do |route|
             if route[:path] == path && route[:method] == method
